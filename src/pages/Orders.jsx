@@ -124,9 +124,13 @@ export default function Orders() {
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
-  // ── Auto-refresh every 5 s (silent — no spinner) ─────────────────────────
+  // ── Auto-refresh every 30 s (silent — no spinner) ────────────────────────
+  // 5-second polling was reading 200 Firestore documents 12× per minute,
+  // exhausting the free-tier quota in under 20 minutes.
+  // 30 s matches the Dashboard interval; backend caches results for 15 s so
+  // reads are further reduced when multiple admin tabs are open.
   useEffect(() => {
-    const id = setInterval(() => fetchOrders(true), 5_000);
+    const id = setInterval(() => fetchOrders(true), 30_000);
     return () => clearInterval(id);
   }, [fetchOrders]);
 
@@ -233,9 +237,9 @@ export default function Orders() {
 
       {/* ── Search + Filter bar ───────────────────────────────────────── */}
       <div className="admin-card p-4 space-y-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-[200px]">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -258,7 +262,7 @@ export default function Orders() {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="form-select h-9 text-sm w-44"
+            className="form-select h-9 text-sm w-full sm:w-44"
           >
             <option value="">All Statuses</option>
             {ALL_STATUSES.map((s) => (

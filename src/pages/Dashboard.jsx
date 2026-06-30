@@ -39,7 +39,7 @@ function StatCard({ icon: Icon, label, value, sub, color, loading, to }) {
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
         {loading
           ? <Skeleton className="h-8 w-28 mt-1" />
-          : <p className="text-2xl font-black text-gray-900 mt-0.5 tabular-nums">{value}</p>
+          : <p className="text-xl sm:text-2xl font-black text-gray-900 mt-0.5 tabular-nums truncate">{value}</p>
         }
         {sub && !loading && (
           <p className="text-xs text-gray-400 mt-0.5">{sub}</p>
@@ -228,7 +228,7 @@ export default function Dashboard() {
       )}
 
       {/* ── Primary stat cards ───────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           icon={ShoppingBag}
           label="Total Orders"
@@ -542,7 +542,7 @@ function DashboardSkeleton() {
         <Skeleton className="h-8 w-24" />
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="admin-card p-5 flex items-start gap-4">
             <Skeleton className="w-12 h-12 rounded-xl flex-shrink-0" />
