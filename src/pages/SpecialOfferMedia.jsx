@@ -78,8 +78,11 @@ export default function SpecialOfferMedia() {
     setError(null);
     try {
       const res = await mediaAPI.getAll();
-      const data = res.data?.data ?? res.data ?? [];
-      setItems(Array.isArray(data) ? data : []);
+      // Admin uses raw axios (no unwrapping interceptor).
+      // Full shape: { success, statusCode, data: { media: [...], total: N } }
+      const raw = res.data?.data ?? res.data ?? {};
+      const data = Array.isArray(raw) ? raw : (raw.media ?? []);
+      setItems(data);
     } catch (e) {
       setError(e.message);
     } finally {
