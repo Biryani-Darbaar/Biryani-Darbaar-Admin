@@ -241,6 +241,7 @@ export default function Users() {
 
       {/* ── Table ──────────────────────────────────────────────── */}
       <div className="admin-card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
@@ -318,6 +319,7 @@ export default function Users() {
               })}
           </tbody>
         </table>
+        </div>
 
         {!loading && filtered.length > 0 && (
           <div className="px-6 py-3 border-t border-gray-100 text-xs text-gray-500 bg-gray-50">
