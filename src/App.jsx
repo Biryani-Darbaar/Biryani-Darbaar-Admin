@@ -12,6 +12,7 @@ import Users           from "./pages/Users";
 import UserDetail      from "./pages/UserDetail";
 import Dishes          from "./pages/Dishes";
 import SpecialOfferMedia from "./pages/SpecialOfferMedia";
+import MenuMedia         from "./pages/MenuMedia";
 import ContactResponses  from "./pages/ContactResponses";
 import NotFound        from "./pages/NotFound";
 
@@ -87,6 +88,7 @@ export default function App() {
         <Route path="users/:id"        element={<UserDetail />} />
         <Route path="dishes"           element={<Dishes />} />
         <Route path="special-offers"   element={<SpecialOfferMedia />} />
+        <Route path="menu-media"       element={<MenuMedia />} />
         <Route path="contact-responses" element={<ContactResponses />} />
       </Route>
 

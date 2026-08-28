@@ -114,6 +114,17 @@ export const mediaAPI = {
   reorder: (items) => api.put("/admin/special-offer-media/reorder", { items }),
 };
 
+// Menu Media (shown in the Menu page carousel on the website)
+export const menuMediaAPI = {
+  getAll: () => api.get("/admin/menu-media"),
+  upload: (formData) =>
+    api.post("/admin/menu-media", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  delete:  (id)   => api.delete(`/admin/menu-media/${id}`),
+  reorder: (items) => api.put("/admin/menu-media/reorder", { items }),
+};
+
 // Contact / Catering Responses
 export const contactAPI = {
   getAll:    (params = {}) => api.get("/admin/contact-responses", { params }),

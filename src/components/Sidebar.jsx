@@ -6,6 +6,7 @@ import {
   Users,
   UtensilsCrossed,
   Film,
+  GalleryHorizontal,
   MessageSquare,
   X,
   ChefHat,
@@ -36,6 +37,11 @@ const NAV_ITEMS = [
     label: "Special Offers",
     to: "/special-offers",
     icon: Film,
+  },
+  {
+    label: "Menu Media",
+    to: "/menu-media",
+    icon: GalleryHorizontal,
   },
   {
     label: "Contact Responses",
