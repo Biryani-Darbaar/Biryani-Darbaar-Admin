@@ -9,7 +9,6 @@ import {
   GalleryHorizontal,
   MessageSquare,
   X,
-  ChefHat,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -69,9 +68,7 @@ export default function Sidebar({ open, onClose }) {
         {/* ── Brand header ─────────────────────────────────────────────── */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-gray-700 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <ChefHat size={20} className="text-white" />
-            </div>
+            <img src="/assets/favicon/apple-touch-icon.png" alt="" className="w-10 h-10 rounded-lg bg-white object-contain p-0.5 flex-shrink-0" />
             <div>
               <p className="text-white font-bold text-sm leading-tight">Biryani Darbaar</p>
               <p className="text-gray-400 text-xs leading-tight">Admin Panel</p>

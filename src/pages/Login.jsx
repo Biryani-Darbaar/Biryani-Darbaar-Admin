@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ChefHat, LogIn, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, LogIn, AlertCircle } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
@@ -40,9 +40,7 @@ export default function Login() {
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary-700 to-primary-600 px-8 py-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4">
-              <ChefHat size={32} className="text-white" />
-            </div>
+            <img src="/assets/favicon/apple-touch-icon.png" alt="" className="mx-auto w-20 h-20 rounded-2xl bg-white object-contain p-1 mb-4 shadow-[0_8px_20px_-8px_rgba(0,0,0,0.4)]" />
             <h1 className="text-2xl font-bold text-white">Biryani Darbaar</h1>
             <p className="text-primary-200 text-sm mt-1">Admin Dashboard</p>
           </div>
@@ -66,7 +64,7 @@ export default function Login() {
                 <input
                   type="email"
                   className="form-input"
-                  placeholder="admin@biryanidarbaar.com.au"
+                  placeholder="admin@biryanidarbaar.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
