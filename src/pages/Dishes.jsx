@@ -8,13 +8,16 @@ import ConfirmDialog from "../components/ConfirmDialog";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 const AUD = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
-const EMPTY_FORM = { name: "", description: "", price: "", category: "" };
+const EMPTY_FORM = { name: "", description: "", price: "", category: "", posItemId: "", posItemName: "" };
 
 /* ── DishForm modal ──────────────────────────────────────────── */
 function DishForm({ categories, dish, onSave, onClose }) {
   const isEdit = !!dish;
   const [form, setForm]       = useState(() => isEdit
-    ? { name: dish.name ?? dish.dishName ?? "", description: dish.description ?? "", price: String(dish.price ?? ""), category: dish.category ?? "" }
+    ? {
+        name: dish.dishName ?? dish.name ?? "", description: dish.description ?? "", price: String(dish.price ?? ""), category: dish.category ?? "",
+        posItemId: dish.posItemId ?? "", posItemName: dish.posItemName ?? "",
+      }
     : { ...EMPTY_FORM });
   const [imageFile, setImage] = useState(null);
   const [preview, setPreview] = useState(isEdit ? (dish.image ?? null) : null);
@@ -36,6 +39,8 @@ function DishForm({ categories, dish, onSave, onClose }) {
     if (!form.category.trim())     return "Category is required.";
     if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0)
       return "A valid price is required.";
+    if (!form.posItemId.trim())    return "POS Item ID is required (from the Metrics ERP item list).";
+    if (!form.posItemName.trim())  return "POS Item Name is required (exactly as in the Metrics ERP).";
     if (!isEdit && !imageFile)     return "An image is required for new dishes.";
     return null;
   };
@@ -45,6 +50,7 @@ function DishForm({ categories, dish, onSave, onClose }) {
     if (e) { setErr(e); return; }
     setSaving(true);
     setErr(null);
+    const posFields = { posItemId: form.posItemId.trim(), posItemName: form.posItemName.trim() };
 
     try {
       if (isEdit) {
@@ -53,15 +59,17 @@ function DishForm({ categories, dish, onSave, onClose }) {
           const fd = new FormData();
           fd.append("image", imageFile);
           // Send other fields as JSON string so updateDishAdmin can parse
-          const fields = { name: form.name, description: form.description, price: Number(form.price) };
+          const fields = { name: form.name, dishName: form.name, description: form.description, price: Number(form.price), ...posFields };
           Object.entries(fields).forEach(([k, v]) => fd.append(k, String(v)));
           await dishesAPI.update(dish.category ?? form.category, dish.dishId, fd, true);
         } else {
           // No file → plain JSON update
           await dishesAPI.update(dish.category ?? form.category, dish.dishId, {
             name: form.name,
+            dishName: form.name,
             description: form.description,
             price: Number(form.price),
+            ...posFields,
           });
         }
       } else {
@@ -72,6 +80,7 @@ function DishForm({ categories, dish, onSave, onClose }) {
           description: form.description,
           price: Number(form.price),
           category: form.category,
+          ...posFields,
         };
         fd.append("dishData", JSON.stringify(dishData));
         fd.append("image", imageFile);
@@ -143,6 +152,24 @@ function DishForm({ categories, dish, onSave, onClose }) {
               value={form.price} onChange={e => set("price", e.target.value)} />
           </div>
 
+          {/* POS (Metrics ERP) mapping */}
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4 space-y-3">
+            <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">POS mapping (Metrics ERP)</p>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="form-label">POS Item ID <span className="text-red-500">*</span></label>
+                <input className="form-input" placeholder="e.g. 7" value={form.posItemId}
+                  onChange={e => set("posItemId", e.target.value)} />
+              </div>
+              <div className="col-span-2">
+                <label className="form-label">POS Item Name <span className="text-red-500">*</span></label>
+                <input className="form-input" placeholder="e.g. CHICKEN BIRYANI" value={form.posItemName}
+                  onChange={e => set("posItemName", e.target.value)} />
+              </div>
+            </div>
+            <p className="text-[11px] text-indigo-600/80">Must match the item in the POS exactly — this is what gets sent with every online order.</p>
+          </div>
+
           {/* Description */}
           <div>
             <label className="form-label">Description</label>
@@ -212,7 +239,7 @@ function AddCategoryModal({ onSave, onClose }) {
 
 /* ── DishCard ─────────────────────────────────────────────────── */
 function DishCard({ dish, onEdit, onToggle, onDelete, actionLoading }) {
-  const name  = dish.name ?? dish.dishName ?? "Unnamed Dish";
+  const name  = dish.dishName ?? dish.name ?? "Unnamed Dish";
   const avail = dish.available !== false;
   const busy  = actionLoading === dish.dishId;
 
@@ -230,6 +257,20 @@ function DishCard({ dish, onEdit, onToggle, onDelete, actionLoading }) {
       <div className="p-4">
         <h3 className="font-semibold text-gray-900 text-sm leading-snug">{name}</h3>
         {dish.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{dish.description}</p>}
+        {dish.posItemId ? (
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+            <span className="inline-flex items-center rounded-md bg-indigo-100 text-indigo-700 px-1.5 py-0.5 text-[10px] font-bold">
+              POS #{dish.posItemId}
+            </span>
+            <span className="inline-flex items-center rounded-md bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 text-[10px] font-medium truncate max-w-full" title={dish.posItemName}>
+              {dish.posItemName || "No POS name"}
+            </span>
+          </div>
+        ) : (
+          <span className="inline-flex items-center mt-2 rounded-md bg-amber-100 text-amber-800 px-1.5 py-0.5 text-[10px] font-bold">
+            ⚠ Not linked to POS
+          </span>
+        )}
         <p className="text-primary-600 font-bold mt-2">{AUD.format(parseFloat(dish.price ?? 0))}</p>
         <div className="flex gap-2 mt-3">
           <button onClick={() => onToggle(dish)} disabled={busy} title={avail ? "Hide dish" : "Show dish"}
