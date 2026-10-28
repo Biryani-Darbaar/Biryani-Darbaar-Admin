@@ -1,3 +1,4 @@
+import { formatPhone } from "../lib/format";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -146,7 +147,7 @@ export default function UserDetail() {
                 <span className="flex items-center gap-2"><Mail size={14} className="text-gray-400 flex-shrink-0" />{user.email}</span>
               )}
               {user.phoneNumber && (
-                <span className="flex items-center gap-2"><Phone size={14} className="text-gray-400 flex-shrink-0" />{user.phoneNumber}</span>
+                <span className="flex items-center gap-2"><Phone size={14} className="text-gray-400 flex-shrink-0" />{formatPhone(user.phoneNumber)}</span>
               )}
               {user.address && (
                 <span className="flex items-center gap-2 sm:col-span-2"><MapPin size={14} className="text-gray-400 flex-shrink-0" />{user.address}</span>

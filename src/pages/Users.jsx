@@ -1,3 +1,4 @@
+import { formatPhone } from "../lib/format";
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Search, Users as UsersIcon, ChevronRight, Phone, Mail, RefreshCw, Wallet, Plus, Minus, RotateCcw, X } from "lucide-react";
@@ -199,7 +200,8 @@ export default function Users() {
       (u.firstName + " " + u.lastName).toLowerCase().includes(q) ||
       u.fullName?.toLowerCase().includes(q) ||
       u.email?.toLowerCase().includes(q) ||
-      u.phoneNumber?.includes(q)
+      u.phoneNumber?.includes(q) ||
+      (q.replace(/\D/g, "") && formatPhone(u.phoneNumber).replace(/\D/g, "").includes(q.replace(/\D/g, "")))
     );
   });
 
@@ -288,7 +290,7 @@ export default function Users() {
                     <td className="px-6 py-4 text-gray-600">
                       <span className="flex items-center gap-1.5">
                         <Phone size={13} className="text-gray-400" />
-                        {u.phoneNumber ?? "—"}
+                        {formatPhone(u.phoneNumber) || "—"}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-500">{fmt(u.createdAt)}</td>
