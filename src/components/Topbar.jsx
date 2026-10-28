@@ -14,6 +14,7 @@ const PAGE_TITLES = {
   "/users":             "Users",
   "/dishes":            "Dishes",
   "/special-offers":    "Special Offers",
+  "/menu-media":        "Menu Media",
   "/contact-responses": "Contact Responses",
 };
 
@@ -218,7 +219,11 @@ export default function Topbar({ onMenuClick }) {
         >
           <Menu size={20} />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+        {/* The page itself owns the h1; this is just orientation */}
+        <p className="text-sm text-gray-500">
+          <span className="hidden sm:inline">Admin <span className="mx-1.5 text-gray-300">/</span></span>
+          <span className="font-semibold text-gray-900">{title}</span>
+        </p>
       </div>
 
       {/* Right: active orders badge + admin info + logout */}
