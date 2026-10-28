@@ -29,11 +29,11 @@ function Skeleton({ className = "" }) {
 }
 
 /** One stat tile in the top row */
-function StatCard({ icon: Icon, label, value, sub, color, loading, to }) {
+function StatCard({ icon: Icon, label, value, sub, loading, to }) {
   const inner = (
     <div className={`admin-card p-5 flex items-start gap-4 transition-shadow ${to ? "hover:shadow-md" : ""}`}>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
-        <Icon size={20} className="text-white" />
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary-50 text-primary-600">
+        <Icon size={20} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
@@ -71,7 +71,8 @@ function ChartTooltip({ active, payload, label, prefix = "", suffix = "" }) {
 
 /** Pie chart custom label */
 function PieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
-  if (percent < 0.04) return null;
+  // Skip tiny slices, and a lone 100% slice (the legend already says it all)
+  if (percent < 0.04 || percent > 0.999) return null;
   const RADIAN = Math.PI / 180;
   const r  = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x  = cx + r * Math.cos(-midAngle * RADIAN);
@@ -234,7 +235,6 @@ export default function Dashboard() {
           label="Total Orders"
           value={NUM.format(d.totalOrders ?? 0)}
           sub={`${NUM.format(d.todayOrdersCount ?? 0)} today`}
-          color="bg-blue-500"
           to="/orders"
         />
         <StatCard
@@ -242,14 +242,12 @@ export default function Dashboard() {
           label="Total Revenue"
           value={AUD.format(d.totalRevenue ?? 0)}
           sub="All confirmed orders"
-          color="bg-emerald-500"
         />
         <StatCard
           icon={Users}
           label="Total Users"
           value={NUM.format(d.totalUsers ?? 0)}
           sub="Registered accounts"
-          color="bg-violet-500"
           to="/users"
         />
         <StatCard
@@ -257,8 +255,7 @@ export default function Dashboard() {
           label="Active Orders"
           value={NUM.format(d.activeOrdersCount ?? 0)}
           sub="In progress right now"
-          color="bg-rose-500"
-          to="/orders/live"
+          to="/orders"
         />
       </div>
 
