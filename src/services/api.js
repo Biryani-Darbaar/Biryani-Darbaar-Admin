@@ -69,7 +69,6 @@ export const dashboardAPI = {
 // Orders
 export const ordersAPI = {
   getAll:  (params = {}) => api.get("/admin/orders",      { params }),
-  getLive: ()             => api.get("/admin/orders/live"),
   getPosFailed: ()        => api.get("/admin/orders/pos-failed"),
   retryPosSync: (id)      => api.post(`/admin/orders/${id}/pos-sync`),
   updateStatus: (id, orderStatus, userId) =>
