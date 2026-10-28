@@ -4,6 +4,7 @@ import {
   Calendar, Hash, CheckCircle2, Loader2,
 } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import { PosBadge, PosRetryButton } from "./PosSync";
 import { ordersAPI } from "../services/api";
 
 const AUD = new Intl.NumberFormat("en-AU", {
@@ -159,6 +160,41 @@ export default function OrderDetailModal({ order, onClose, onStatusChange }) {
             )}
           </div>
 
+          {/* ── POS (Metrics ERP) ───────────────────────────────────── */}
+          {order.posSync && (
+            <div className={`rounded-xl border p-4 ${
+              order.posSync.status === "failed" ? "border-red-300 bg-red-50"
+                : order.posSync.status === "synced" ? "border-emerald-200 bg-emerald-50/60"
+                : "border-amber-200 bg-amber-50"
+            }`}>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">POS (Metrics ERP)</p>
+                  <PosBadge posSync={order.posSync} />
+                </div>
+                {order.posSync.status === "failed" && (
+                  <PosRetryButton orderId={order.id} size="lg" onResult={(_, err) => err && setUpdateError(err)} />
+                )}
+              </div>
+              {order.posSync.status === "failed" && order.posSync.lastError && (
+                <p className="mt-3 text-xs text-red-700 break-words">
+                  <span className="font-semibold">Last error:</span> {order.posSync.lastError}
+                </p>
+              )}
+              <p className="mt-2 text-[11px] text-gray-500">
+                {order.posSync.attempts ?? 0} attempt{order.posSync.attempts === 1 ? "" : "s"}
+                {order.posSync.lastAttemptAt && ` · last ${new Date(order.posSync.lastAttemptAt).toLocaleString("en-AU")}`}
+              </p>
+            </div>
+          )}
+
+          {order.instructions && (
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Customer instructions</p>
+              <p className="text-sm text-gray-800 whitespace-pre-wrap">{order.instructions}</p>
+            </div>
+          )}
+
           {/* ── Items ───────────────────────────────────────────────── */}
           <div>
             <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -183,6 +219,11 @@ export default function OrderDetailModal({ order, onClose, onStatusChange }) {
                       <tr key={item.dishId ?? i}>
                         <td className="px-4 py-2.5 font-medium text-gray-800">
                           {item.name || item.dishName || "—"}
+                          {item.posItemId && (
+                            <span className="block text-[10px] font-semibold text-indigo-600">
+                              POS #{item.posItemId} · {item.posItemName}
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-2.5 text-center text-gray-600">{item.quantity ?? 1}</td>
                         <td className="px-4 py-2.5 text-right text-gray-600">

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { ordersAPI } from "../services/api";
 import StatusBadge, { STATUS_LABELS } from "../components/StatusBadge";
+import { PosBadge, PosRetryButton, POS_SYNC_EVENT } from "../components/PosSync";
 import OrderDetailModal from "../components/OrderDetailModal";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -133,6 +134,19 @@ export default function Orders() {
     const id = setInterval(() => fetchOrders(true), 30_000);
     return () => clearInterval(id);
   }, [fetchOrders]);
+
+  // Refresh when a POS push is retried anywhere (banner, toast, modal)
+  useEffect(() => {
+    const onPos = (e) => {
+      const { orderId, posSync } = e.detail || {};
+      if (posSync) {
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, posSync } : o)));
+        setSelectedOrder((o) => (o?.id === orderId ? { ...o, posSync } : o));
+      }
+    };
+    window.addEventListener(POS_SYNC_EVENT, onPos);
+    return () => window.removeEventListener(POS_SYNC_EVENT, onPos);
+  }, []);
 
   // ── Sort handler ──────────────────────────────────────────────────────────
   const handleSort = (field) => {
@@ -347,6 +361,9 @@ export default function Orders() {
                 <th className="py-3 px-4 text-left">
                   <SortHeader label="Status"      field="orderStatus" sort={sort} onSort={handleSort} />
                 </th>
+                <th className="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                  POS
+                </th>
                 <th className="py-3 px-4 text-left">
                   <SortHeader label="Date"        field="orderDate"   sort={sort} onSort={handleSort} />
                 </th>
@@ -360,7 +377,7 @@ export default function Orders() {
               {/* Loading skeleton */}
               {loading && [...Array(8)].map((_, i) => (
                 <tr key={i}>
-                  {[...Array(7)].map((__, j) => (
+                  {[...Array(8)].map((__, j) => (
                     <td key={j} className="py-3.5 px-4">
                       <Skeleton className="h-4 w-full" />
                     </td>
@@ -371,7 +388,7 @@ export default function Orders() {
               {/* Empty state */}
               {!loading && filteredOrders.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-16 text-center">
+                  <td colSpan={8} className="py-16 text-center">
                     <ShoppingBag size={36} className="mx-auto text-gray-200 mb-3" />
                     <p className="text-sm font-semibold text-gray-500">
                       {hasActiveFilters ? "No orders match your filters" : "No orders yet"}
@@ -461,7 +478,9 @@ function OrderRow({ order, onView, onStatusChange }) {
   };
 
   return (
-    <tr className="hover:bg-gray-50/70 transition-colors group">
+    <tr className={`transition-colors group ${
+      order.posSync?.status === "failed" ? "bg-red-50/70 hover:bg-red-50 shadow-[inset_3px_0_0_#dc2626]" : "hover:bg-gray-50/70"
+    }`}>
       {/* Order ID */}
       <td className="py-3 px-4">
         <span className="font-mono font-bold text-gray-800 text-xs">{shortId}</span>
@@ -499,6 +518,14 @@ function OrderRow({ order, onView, onStatusChange }) {
           className="absolute opacity-0 w-0 h-0 pointer-events-none"
           aria-label="Update status"
         />
+      </td>
+
+      {/* POS sync */}
+      <td className="py-3 px-4">
+        <div className="flex flex-col items-start gap-1.5">
+          <PosBadge posSync={order.posSync} />
+          {order.posSync?.status === "failed" && <PosRetryButton orderId={order.id} />}
+        </div>
       </td>
 
       {/* Date */}
