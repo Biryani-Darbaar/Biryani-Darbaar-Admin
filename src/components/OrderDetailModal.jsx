@@ -75,8 +75,10 @@ export default function OrderDetailModal({ order, onClose, onStatusChange }) {
     : [];
 
   const deliveryAddress = order.deliveryAddress ?? order.address ?? null;
-  const subTotal = items.reduce((s, i) => s + (i.price ?? 0) * (i.quantity ?? 1), 0);
-  const deliveryFee = (order.totalPrice ?? 0) - subTotal;
+  const subTotal = order.subtotal ?? items.reduce((s, i) => s + (i.price ?? 0) * (i.quantity ?? 1), 0);
+  // Newer orders store the exact breakdown; older ones only had a total
+  const deliveryFee = order.deliveryFee ?? (order.totalPrice ?? 0) - subTotal;
+  const paid = order.paymentStatus === "paid" || order.paymentVerified === true;
 
   // Date: backend now sends ISO strings; also handle numeric timestamps defensively.
   const formattedDate = (() => {
@@ -146,7 +148,9 @@ export default function OrderDetailModal({ order, onClose, onStatusChange }) {
             <InfoRow icon={User}      label="User ID"            value={order.userId} />
             <InfoRow icon={Calendar}  label="Order Date"         value={formattedDate} />
             <InfoRow icon={CreditCard} label="Payment"
-              value={order.paymentVerified ? "✓ Verified" : "Pending"}
+              value={paid
+                ? `Paid ${AUD.format(order.finalAmountPaid ?? order.totalPrice ?? 0)}`
+                : order.paymentStatus ? `Not paid (${order.paymentStatus})` : "Unverified"}
             />
             {deliveryAddress && (
               <div className="col-span-2">
@@ -247,6 +251,18 @@ export default function OrderDetailModal({ order, onClose, onStatusChange }) {
                     <div className="flex justify-between text-sm text-gray-500">
                       <span>Delivery fee</span>
                       <span>{AUD.format(deliveryFee)}</span>
+                    </div>
+                  )}
+                  {order.promoDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>Promo {order.promoCode}</span>
+                      <span>−{AUD.format(order.promoDiscount)}</span>
+                    </div>
+                  )}
+                  {order.coinDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>Coins ({order.coinsUsed})</span>
+                      <span>−{AUD.format(order.coinDiscount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-base font-black text-gray-900 pt-1.5 border-t border-gray-100">
