@@ -265,6 +265,12 @@ export default function OrderDetailModal({ order, onClose, onStatusChange }) {
                       <span>−{AUD.format(order.coinDiscount)}</span>
                     </div>
                   )}
+                  {order.coinsEarned > 0 && (
+                    <div className="flex justify-between text-xs text-emerald-700 pt-1">
+                      <span>Coins earned by customer</span>
+                      <span className="font-semibold">+{order.coinsEarned}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-base font-black text-gray-900 pt-1.5 border-t border-gray-100">
                     <span>Total</span>
                     <span className="text-primary-600">{AUD.format(order.totalPrice ?? 0)}</span>
