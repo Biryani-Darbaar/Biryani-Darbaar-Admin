@@ -75,6 +75,12 @@ export const ordersAPI = {
     api.patch(`/admin/orders/${id}`, { orderStatus, userId }),
 };
 
+// Online ordering ON/OFF switch (website + API)
+export const settingsAPI = {
+  getOrdering: ()     => api.get("/admin/settings/ordering"),
+  setOrdering: (open) => api.put("/admin/settings/ordering", { open }),
+};
+
 // Users
 export const usersAPI = {
   getAll:       ()            => api.get("/admin/users"),
