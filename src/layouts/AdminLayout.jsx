@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar  from "../components/Topbar";
 import { PosSyncAlert } from "../components/PosSync";
+import { OrderingOffBanner } from "../components/OrderingSwitch";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -23,6 +24,8 @@ export default function AdminLayout() {
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
+        {/* Online ordering is OFF — shown on every page so nobody forgets */}
+        <OrderingOffBanner />
         {/* Failed POS pushes — shown on every admin page */}
         <PosSyncAlert />
 
