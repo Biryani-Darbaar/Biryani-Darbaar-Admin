@@ -63,11 +63,12 @@ function ActiveOrdersBadge() {
     }
   }, []);
 
-  // Initial load + 5-second refresh (same cadence as Orders page)
+  // Initial load + 45-second refresh. Each call reads up to 100 orders from
+  // Firestore, so a fast poll burned through the daily read quota.
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchActive();
-    const id = setInterval(fetchActive, 5_000);
+    const id = setInterval(fetchActive, 45_000);
     return () => clearInterval(id);
   }, [isAuthenticated, fetchActive]);
 
