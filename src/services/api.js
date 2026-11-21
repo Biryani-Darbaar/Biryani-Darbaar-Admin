@@ -78,7 +78,8 @@ export const ordersAPI = {
 // Online ordering ON/OFF switch (website + API)
 export const settingsAPI = {
   getOrdering: ()     => api.get("/admin/settings/ordering"),
-  setOrdering: (open) => api.put("/admin/settings/ordering", { open }),
+  // patch: { open } | { pickup } | { delivery } (booleans)
+  setOrdering: (patch) => api.put("/admin/settings/ordering", patch),
 };
 
 // Users
