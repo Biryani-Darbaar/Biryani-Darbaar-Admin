@@ -6,7 +6,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { ordersAPI } from "../services/api";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { OrderingSwitch } from "./OrderingSwitch";
+import { OrderingSwitch, MethodSwitch } from "./OrderingSwitch";
 
 // ── Page title map ──────────────────────────────────────────────────────────────
 const PAGE_TITLES = {
@@ -229,10 +229,16 @@ export default function Topbar({ onMenuClick }) {
       </div>
 
       {/* Right: active orders badge + admin info + logout */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
 
-        {/* Online ordering ON/OFF — the website follows this switch */}
-        {isAuthenticated && <OrderingSwitch />}
+        {/* Online ordering + Pickup / Delivery ON/OFF — the website follows these switches */}
+        {isAuthenticated && (
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <OrderingSwitch />
+            <MethodSwitch method="pickup" />
+            <MethodSwitch method="delivery" />
+          </div>
+        )}
 
         {/* Active orders badge — only renders when authenticated + orders exist */}
         {isAuthenticated && <ActiveOrdersBadge />}
